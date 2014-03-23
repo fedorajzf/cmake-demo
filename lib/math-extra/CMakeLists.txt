@@ -34,12 +34,19 @@ include_directories(
 
 link_directories( ${CMAKE_BINARY_DIR}/math-basic/bin)
 
+# Build dynamic library
 add_library( math-extra SHARED
     ${SOURCES}
 )
-
 target_link_libraries( math-extra math-basic )
 add_dependencies( math-extra math-basic-build )
+
+# Build static library
+add_library( math-extra-static STATIC
+    ${SOURCES}
+)
+target_link_libraries( math-extra-static math-basic )
+add_dependencies( math-extra-static math-basic-build )
 
 # Build tests
 

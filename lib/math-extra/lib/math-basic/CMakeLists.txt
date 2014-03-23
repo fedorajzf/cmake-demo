@@ -19,6 +19,10 @@ add_library ( math-basic SHARED
     ${SOURCES}
 )
 
+add_library ( math-basic-static STATIC
+    ${SOURCES}
+)
+
 # Build tests
 
 set ( TEST_SOURCES
