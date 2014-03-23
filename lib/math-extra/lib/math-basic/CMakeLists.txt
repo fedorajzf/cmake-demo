@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6.0)
-project(library-math)
+project(library-math-basic)
 enable_testing()
 
 # Build library
 
 set ( HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/math.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/math-basic.h
 )
 
 set ( SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/math.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/math-basic.cpp
     ${HEADERS}
 )
 
@@ -31,4 +31,4 @@ foreach( testsourcefile ${TEST_SOURCES} )
     add_executable( ${testname} ${testsourcefile} )
     target_link_libraries( ${testname} math )
     add_test( ${testname} ${testname} )
-endforeach( testsourcefile ${APP_SOURCES} )
+endforeach( testsourcefile ${TEST_SOURCES} )

@@ -1,7 +1,7 @@
-#ifndef __MATH__INCLUDE_H__
-#define __MATH__INCLUDE_H__
+#ifndef __MATH_BASIC_INCLUDE_H__
+#define __MATH_BASIC_INCLUDE_H__
 
-class Math
+class MathBasic
 {
     public:
         int multiply(int a, int b);
