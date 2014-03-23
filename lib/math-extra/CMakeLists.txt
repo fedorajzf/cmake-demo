@@ -7,9 +7,10 @@ enable_testing()
 include(ExternalProject) # cmake module, available as of v2.8.0
 
 ExternalProject_Add(
-    math-basic
+    math-basic-build
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/lib/math-basic
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/math-basic
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/math-basic/bin
     DOWNLOAD_COMMAND ""
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""
@@ -31,11 +32,14 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic/include
 )
 
+link_directories( ${CMAKE_BINARY_DIR}/math-basic/bin)
+
 add_library( math-extra SHARED
     ${SOURCES}
 )
 
-target_link_libraries( math-extra ${CMAKE_CURRENT_BINARY_DIR}/lib/math-basic/src/math-basic-build/libmath.dylib ) # make target independent
+target_link_libraries( math-extra math-basic )
+add_dependencies( math-extra math-basic-build )
 
 # Build tests
 

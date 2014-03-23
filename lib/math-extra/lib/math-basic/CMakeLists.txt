@@ -15,7 +15,7 @@ set ( SOURCES
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
-add_library ( math SHARED
+add_library ( math-basic SHARED
     ${SOURCES}
 )
 
@@ -29,6 +29,6 @@ set ( TEST_SOURCES
 foreach( testsourcefile ${TEST_SOURCES} )
     get_filename_component( testname ${testsourcefile} NAME_WE)
     add_executable( ${testname} ${testsourcefile} )
-    target_link_libraries( ${testname} math )
+    target_link_libraries( ${testname} math-basic )
     add_test( ${testname} ${testname} )
 endforeach( testsourcefile ${TEST_SOURCES} )
