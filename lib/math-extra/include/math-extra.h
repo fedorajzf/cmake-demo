@@ -3,7 +3,7 @@
 
 #include "math-basic.h"
 
-class MathExtra : MathBasic
+class MathExtra : public MathBasic
 {
     public:
         int power(int base, int exponent);

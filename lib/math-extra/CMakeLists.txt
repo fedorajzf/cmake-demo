@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.0)
 project(library-math-extra)
 enable_testing()
 
-# Build dependent project
+# Build dependent project (math-basic)
 
 include(ExternalProject) # cmake module, available as of v2.8.0
 
@@ -16,7 +16,16 @@ ExternalProject_Add(
     INSTALL_COMMAND ""
 )
 
-# Build library
+ExternalProject_Get_Property( math-basic-build SOURCE_DIR )
+ExternalProject_Get_Property( math-basic-build BINARY_DIR )
+
+add_library( math-basic SHARED IMPORTED )
+add_library( math-basic-static STATIC IMPORTED )
+
+set_target_properties( math-basic PROPERTIES IMPORTED_LOCATION ${BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}math-basic${CMAKE_SHARED_LIBRARY_SUFFIX} )
+set_target_properties( math-basic-static PROPERTIES IMPORTED_LOCATION ${BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic-static${CMAKE_STATIC_LIBRARY_SUFFIX} )
+
+# Build library math-extra
 
 set ( HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/math-extra.h
@@ -29,10 +38,8 @@ set ( SOURCES
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic/include
+    ${SOURCE_DIR}/include
 )
-
-link_directories( ${CMAKE_BINARY_DIR}/math-basic/bin)
 
 # Build dynamic library
 add_library( math-extra SHARED
@@ -45,8 +52,20 @@ add_dependencies( math-extra math-basic-build )
 add_library( math-extra-static STATIC
     ${SOURCES}
 )
-target_link_libraries( math-extra-static math-basic )
+target_link_libraries( math-extra-static math-basic-static )
 add_dependencies( math-extra-static math-basic-build )
+
+# Export library math-extra
+
+export ( TARGETS math-extra math-extra-static FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-depends.cmake )
+install (
+    TARGETS math-extra math-extra-static
+    EXPORT ${PROJECT_NAME}-depends
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    PUBLIC_HEADER DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+export ( PACKAGE math-extra )
 
 # Build tests
 
@@ -59,4 +78,4 @@ foreach( testsourcefile ${TEST_SOURCES} )
     add_executable( ${testname} ${testsourcefile} )
     target_link_libraries( ${testname} math-extra )
     add_test( ${testname} ${testname} )
-endforeach( testsourcefile ${TEST_SOURCES} )
+endforeach()
