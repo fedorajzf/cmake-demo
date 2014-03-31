@@ -55,18 +55,6 @@ add_library( math-extra-static STATIC
 target_link_libraries( math-extra-static math-basic-static )
 add_dependencies( math-extra-static math-basic-build )
 
-# Export library math-extra
-
-export ( TARGETS math-extra math-extra-static FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-depends.cmake )
-install (
-    TARGETS math-extra math-extra-static
-    EXPORT ${PROJECT_NAME}-depends
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/include"
-)
-export ( PACKAGE math-extra )
-
 # Build tests
 
 set ( TEST_SOURCES
