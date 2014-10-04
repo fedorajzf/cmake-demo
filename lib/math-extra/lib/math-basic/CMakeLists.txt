@@ -12,7 +12,12 @@
 
 # ----------------------------- Initialization --------------------------------
 
-cmake_minimum_required(VERSION 2.6.0)
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    cmake_minimum_required(VERSION 2.8.12)
+else()
+    cmake_minimum_required(VERSION 2.8.0)
+endif()
+
 project(library-math-basic)
 enable_testing()
 
@@ -44,8 +49,10 @@ set_target_properties( math-basic PROPERTIES VERSION ${math-basic_VERSION_STRING
 
 # ----------------------------- Install target -------------------------------
 
-set( CMAKE_MACOSX_RPATH ON )
-set_target_properties( math-basic PROPERTIES INSTALL_NAME_DIR "@rpath" ) 
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( CMAKE_MACOSX_RPATH ON )
+    set_target_properties( math-basic PROPERTIES INSTALL_NAME_DIR "@rpath" )
+endif()
 install( TARGETS math-basic DESTINATION lib )
 
 # ------------------------------- Build tests ---------------------------------

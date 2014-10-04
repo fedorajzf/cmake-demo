@@ -11,7 +11,12 @@
 
 # ----------------------------- Initialization --------------------------------
 
-cmake_minimum_required(VERSION 2.8.12)
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    cmake_minimum_required(VERSION 2.8.12)
+else()
+    cmake_minimum_required(VERSION 2.8.0)
+endif()
+
 project(cmake-demo)
 
 # ------------------------  Add referenced projects ---------------------------
@@ -28,6 +33,11 @@ target_link_libraries( cmake-demo math-extra )
 
 # ----------------------------- Install target --------------------------------
 
-set( CMAKE_MACOSX_RPATH ON )
-set_target_properties( cmake-demo PROPERTIES INSTALL_RPATH "@loader_path/../lib")
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( CMAKE_MACOSX_RPATH ON )
+    set_target_properties( cmake-demo PROPERTIES INSTALL_RPATH "@loader_path/../lib")
+else()
+    set_target_properties( cmake-demo PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE )
+    set_target_properties( cmake-demo PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib" )
+endif()
 install( TARGETS cmake-demo DESTINATION bin )
