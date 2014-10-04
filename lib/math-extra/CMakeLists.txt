@@ -16,36 +16,25 @@ cmake_minimum_required(VERSION 2.8.0)
 project(library-math-extra)
 enable_testing()
 
-# ---------------------------- Build math-basic -------------------------------
+set( math-extra_VERSION_MAJOR 1 )
+set( math-extra_VERSION_MINOR 0 )
+set( math-extra_VERSION_PATCH 0 )
+set( math-extra_VERSION_STRING ${math-extra_VERSION_MAJOR}.${math-extra_VERSION_MINOR}.${math-extra_VERSION_PATCH} )
+
+# ------------------------  Add referenced projects ---------------------------
 
 include( ExternalProject ) # requires cmake v2.8.0
 
 ExternalProject_Add(
     math-basic-build
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/math-basic
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/math-basic/bin
-    CMAKE_ARGS -DBUILD_STATIC_LIBRARIES=${BUILD_STATIC_LIBRARIES}
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic"
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/math-basic/bin"
+    CMAKE_ARGS "-DBUILD_STATIC_LIBRARIES=${BUILD_STATIC_LIBRARIES}"
+    CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
     DOWNLOAD_COMMAND ""
     UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
 )
-
-# We register the library into the build system
-if ( BUILD_STATIC_LIBRARIES )
-    add_library( math-basic STATIC IMPORTED )
-else()
-    add_library( math-basic SHARED IMPORTED )
-endif()
-
-ExternalProject_Get_Property( math-basic-build SOURCE_DIR )
-ExternalProject_Get_Property( math-basic-build BINARY_DIR )
-
-if( BUILD_STATIC_LIBRARIES )
-    set_target_properties( math-basic PROPERTIES IMPORTED_LOCATION ${BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX} )
-else()
-    set_target_properties( math-basic PROPERTIES IMPORTED_LOCATION ${BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}math-basic${CMAKE_SHARED_LIBRARY_SUFFIX} )
-endif()
 
 # ------------------------------ Build library --------------------------------
 
@@ -60,19 +49,28 @@ set ( SOURCES
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic/include
 )
 
 if ( BUILD_STATIC_LIBRARIES )
     add_library( math-extra STATIC ${SOURCES} )
+    target_link_libraries( math-extra ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX} )
 else()
     add_library( math-extra SHARED ${SOURCES} )
+    target_link_libraries( math-extra ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}math-basic${CMAKE_SHARED_LIBRARY_SUFFIX} )
 endif()
 
-target_link_libraries( math-extra math-basic )
 add_dependencies( math-extra math-basic-build )
 
-# Build tests
+set_target_properties( math-extra PROPERTIES VERSION ${math-extra_VERSION_STRING} SOVERSION ${math-extra_VERSION_MAJOR} )
+
+# ----------------------------- Install target --------------------------------
+
+set( CMAKE_MACOSX_RPATH ON )
+set_target_properties(math-extra PROPERTIES INSTALL_NAME_DIR "@rpath") 
+install( TARGETS math-extra DESTINATION lib )
+
+# ------------------------------- Build tests ---------------------------------
 
 set ( TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/power.cpp
