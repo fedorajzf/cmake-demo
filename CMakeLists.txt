@@ -18,6 +18,7 @@ else()
 endif()
 
 project(cmake-demo)
+enable_testing()
 
 # ------------------------  Add referenced projects ---------------------------
 
@@ -41,3 +42,19 @@ else()
     set_target_properties( cmake-demo PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib" )
 endif()
 install( TARGETS cmake-demo DESTINATION bin )
+
+# ------------------------------- Build tests ---------------------------------
+
+add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest/include )
+
+set ( TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/gtest_example.cpp
+)
+
+foreach( testsourcefile ${TEST_SOURCES} )
+    get_filename_component( testname ${testsourcefile} NAME_WE)
+    add_executable( ${testname} ${testsourcefile} )
+    target_link_libraries( ${testname} gtest_main )
+    add_test( ${testname} ${testname} )
+endforeach()

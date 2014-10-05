@@ -30,15 +30,18 @@ set( math-extra_VERSION_STRING ${math-extra_VERSION_MAJOR}.${math-extra_VERSION_
 
 include( ExternalProject ) # requires cmake v2.8.0
 
+# Recommendation: always build static libraries when using ExternalProject. It
+# appears to be very complex to correctly build, link and install a dynamic
+# library.
 ExternalProject_Add(
     math-basic-build
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic"
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
-    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/math-basic/bin"
-    CMAKE_ARGS "-DBUILD_STATIC_LIBRARIES=${BUILD_STATIC_LIBRARIES}"
-    CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
+    CMAKE_ARGS "-DBUILD_STATIC_LIBRARIES=1"
     DOWNLOAD_COMMAND ""
     UPDATE_COMMAND ""
+    INSTALL_COMMAND ""
 )
 
 # ------------------------------ Build library --------------------------------
@@ -59,11 +62,12 @@ include_directories(
 
 if ( BUILD_STATIC_LIBRARIES )
     add_library( math-extra STATIC ${SOURCES} )
-    target_link_libraries( math-extra ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX} )
 else()
     add_library( math-extra SHARED ${SOURCES} )
-    target_link_libraries( math-extra ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}math-basic${CMAKE_SHARED_LIBRARY_SUFFIX} )
 endif()
+
+set( lib-math-basic ${CMAKE_CURRENT_BINARY_DIR}/math-basic/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX} )
+target_link_libraries( math-extra ${lib-math-basic} )
 
 add_dependencies( math-extra math-basic-build )
 
@@ -72,8 +76,10 @@ set_target_properties( math-extra PROPERTIES VERSION ${math-extra_VERSION_STRING
 # ----------------------------- Install target --------------------------------
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    # Make installed library relocatable
     set( CMAKE_MACOSX_RPATH ON )
-    set_target_properties(math-extra PROPERTIES INSTALL_NAME_DIR "@rpath")
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+    set_target_properties( math-extra PROPERTIES INSTALL_NAME_DIR "@rpath" )
 endif() 
 install( TARGETS math-extra DESTINATION lib )
 

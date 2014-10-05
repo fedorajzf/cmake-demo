@@ -51,6 +51,7 @@ set_target_properties( math-basic PROPERTIES VERSION ${math-basic_VERSION_STRING
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_MACOSX_RPATH ON )
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
     set_target_properties( math-basic PROPERTIES INSTALL_NAME_DIR "@rpath" )
 endif()
 install( TARGETS math-basic DESTINATION lib )
