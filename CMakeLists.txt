@@ -58,3 +58,15 @@ foreach( testsourcefile ${TEST_SOURCES} )
     target_link_libraries( ${testname} gtest_main )
     add_test( ${testname} ${testname} )
 endforeach()
+
+
+# ------------------------- Generate Documentation ----------------------------
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile @ONLY)
+    add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile
+    ${CMAKE_CURRENT_SOURCE_DIR}/doc
+    COMMENT "Generating API documentation" VERBATIM
+)
+endif(DOXYGEN_FOUND)
