@@ -1,17 +1,15 @@
-#include "math-extra.h"
-#include "math-basic.h"
+/*
+ * main.cpp - Main function
+ *
+ * Copyright (C) 2014-2015 Takar.
+ *
+ * Written by Tamar Kranenburg <info@takar.nl>
+ */
 
-#include <iostream>
+#include "math.h"
 
-int main(int argc, char **argv)
-{
-    MathExtra *mathExtraLib = new MathExtra();
-    std::cout << "4 * 2 = " << mathExtraLib->multiply(4, 2) << "\n";
-    std::cout << "4 / 2 = " << mathExtraLib->divide(4, 2) << "\n";
-    std::cout << "4 ^ 2 = " << mathExtraLib->power(4, 2) << "\n";
-
-    MathBasic *mathBasicLib = new MathBasic();
-    std::cout << "4 * 2 = " << mathBasicLib->multiply(4, 2) << "\n";
-    std::cout << "4 / 2 = " << mathBasicLib->divide(4, 2) << "\n";
+int main(int argc, char **argv) {
+    math_extra();
+    math_basic();
     return 0;
 }

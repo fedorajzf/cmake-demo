@@ -1,6 +1,8 @@
-= cmake-demo: A cmake based skeleton project =
+cmake-demo: A cmake based skeleton project {#mainpage}
+==========================================
 
-== Introduction ==
+Introduction
+------------
 
 This project is intended to be used as an example project, or a base project
 for "the real work". The project setup is based on "best practices" as can
@@ -26,33 +28,36 @@ this is only suited for projects using CMake.
 Both test runners ctest and gtest are used. Additionally, gtest is included
 using the subtree-merge strategy for easy maintenance.
 
-3. Relocateable installation targets
+3. Relocatable installation targets
 
 The generated binaries are "relocatable", meaning you could move them anywhere
 in the system as long as their relative directory structure remains intact.
 This is achieved by using the RPATH facilities of Unix-like Operating Systems.
 
-== Usage ==
+Usage
+-----
 
 Every (sub)project can be built, tested and installed using the following
 commands:
 
-> mkdir build
-> mkdir install
-> cd build
-> cmake [CMAKE_OPTIONS*] ..
-> make
-> make test
-> make install
+    $ mkdir build
+    $ mkdir install
+    $ cd build
+    $ cmake [CMAKE_OPTIONS*] ..
+    $ make
+    $ make test
+    $ make install
 
 CMAKE_OPTIONS*:
-    For developers, it is recommended to add the following cmake-options:
-    > -DCMAKE_BUILD_PREFIX:PATH=`pwd`/../install
-    This will make sure the install command can be run without root privileges,
-    and it won't change the system.
 
-To output test results on failure, type this in the console:
+For developers, it is recommended to add the following cmake-options:
 
-> ctest --output-on-failure
-or, to make it permanent:
-> echo "export CTEST_OUTPUT_ON_FAILURE=1" >> ~/.bashrc
+    $ -DCMAKE_BUILD_PREFIX:PATH=`pwd`/../install
+
+This will make sure the install command can be run without root privileges,
+and it won't change the system.
+
+Other usefull targets:
+
+    $ make check # run tests, show output on failure
+    $ make coverage # run coverage analysis and generate html report
