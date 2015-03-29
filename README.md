@@ -61,3 +61,20 @@ Other usefull targets:
 
     $ make check # run tests, show output on failure
     $ make coverage # run coverage analysis and generate html report
+
+Cross compilation
+-----------------
+
+The project can be cross-comppiled to different architectures, for example
+from amd64 (x86_64) to i386 (x86). First, the cross-compilation tool needs
+to be configured:
+
+    $ sudo dpkg --add-architecture <arch>
+    $ sudo apt-get update
+    $ sudo apt-get install g++-4.9-multilib gcc-4.9-multilib
+
+Now cmake should be run with an extra "toolchain" command, e.g.:
+
+    $ mkdir build && cd build
+    $ cmake -DCMAKE_TOOLCHAIN_FILE=PATH:../cmake/Toolchain-i386.cmake \
+            -DCMAKE_BUILD_TYPE=Release ..

@@ -38,12 +38,17 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 # create a cmake file which can be inclu=== in the main project. A static library
 # will be built, because that is the default of the subproject.
 
+if (CMAKE_TOOLCHAIN_FILE)
+    set (math-basic-build-args "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+endif ()
+
 include (ExternalProject) # requires cmake v2.8.0
 ExternalProject_Add (
     math-basic-build
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic"
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
+    CMAKE_ARGS "${math-basic-build-args}"
     DOWNLOAD_COMMAND ""
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""

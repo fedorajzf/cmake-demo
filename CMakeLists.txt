@@ -22,6 +22,7 @@ enable_testing ()
 
 # ------------------------  Add referenced projects ---------------------------
 
+set (BUILD_SHARED_LIBS ON CACHE STRING "")
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/math-extra)
 
 # ------------------------------- Build target --------------------------------
@@ -43,7 +44,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set (CMAKE_MACOSX_RPATH ON)
     set_target_properties (cmake-demo PROPERTIES INSTALL_RPATH "@loader_path/../lib")
 else ()
-    set_target_properties (cmake-demo PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+    set_target_properties (cmake-demo PROPERTIES BUILD_WITH_INSTALL_RPATH FALSE)
     set_target_properties (cmake-demo PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 endif ()
 install (TARGETS cmake-demo DESTINATION bin)
