@@ -29,11 +29,6 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/math-extra)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/lib/math-extra/include)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/lib/math-extra/lib/math-basic/include)
 
-# In debug mode turn off optimization and enable coverage
-if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT CMAKE_CROSSCOMPILING)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fprofile-arcs -ftest-coverage")
-endif ()
-
 set (SOURCES
      ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/src/math.cpp
@@ -52,6 +47,12 @@ else ()
     set_target_properties (cmake-demo PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 endif ()
 install (TARGETS cmake-demo DESTINATION bin)
+
+# ------------------------------- Build package--------------------------------
+
+set (CPACK_GENERATOR "DEB")
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Tamar Kranenburg")
+include (CPack)
 
 # ------------------------------- Build tests ---------------------------------
 
@@ -86,10 +87,12 @@ endif ()
 # ---------------------------- Coverage analysis ------------------------------
 
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    include (CodeCoverage)
-    setup_target_for_coverage (coverage ${CMAKE_PROJECT_NAME}-test coverage
-                              "${PROJECT_SOURCE_DIR}/src/*")
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        include (CodeCoverage)
+        setup_target_for_coverage (coverage ${CMAKE_PROJECT_NAME}-test coverage
+                                  "${PROJECT_SOURCE_DIR}/src/*")
+    endif ()
 endif ()
 
 # ------------------------- Generate Documentation ----------------------------
