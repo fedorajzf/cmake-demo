@@ -28,13 +28,8 @@ set (math-basic_VERSION_STRING ${math-basic_VERSION_MAJOR}.${math-basic_VERSION_
 
 # ------------------------------ Build library --------------------------------
 
-set (HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/math-basic.h
-)
-
 set (SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/math-basic.cpp
-    ${HEADERS}
 )
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -66,10 +61,6 @@ set (TEST_SOURCES
 foreach (testsourcefile ${TEST_SOURCES})
     get_filename_component (testname ${testsourcefile} NAME_WE)
     add_executable (${testname} ${testsourcefile})
-    if (BUILD_STATIC_LIBRARIES)
-        target_link_libraries (${testname} math-basic)
-    else ()
-        target_link_libraries (${testname} math-basic)
-    endif ()
+    target_link_libraries (${testname} math-basic)
     add_test (${testname} ${testname})
 endforeach (testsourcefile ${TEST_SOURCES})

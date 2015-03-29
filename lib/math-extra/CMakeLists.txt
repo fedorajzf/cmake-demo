@@ -28,11 +28,11 @@ set (math-extra_VERSION_STRING ${math-extra_VERSION_MAJOR}.${math-extra_VERSION_
 
 # ------------------------  Add referenced projects ---------------------------
 
-include( ExternalProject) # requires cmake v2.8.0
 
-# Recommendation: always build static libraries when using ExternalProject. It
-# appears to be very complex to correctly build, link and install a dynamic
-# library.
+# This is an example of using ExternalProject to build a 3rdparty library. Obviouly,
+# one would use add_subdirectory whenever the 3rdparty library also uses CMake.
+
+include (ExternalProject) # requires cmake v2.8.0
 ExternalProject_Add (
     math-basic-build
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic"
@@ -44,20 +44,21 @@ ExternalProject_Add (
     INSTALL_COMMAND ""
 )
 
-# ------------------------------ Build library --------------------------------
+add_library (math-basic STATIC IMPORTED)
+set_target_properties (math-basic PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/math-basic/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX})
+add_dependencies (math-basic math-basic-build)
+set (MATH_BASIC_INCLUDE_DIRS  ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic/include)
+set (MATH_BASIC_LIBRARIES math-basic)
 
-set (HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/math-extra.h
-)
+# ------------------------------ Build library --------------------------------
 
 set (SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/power.cpp
-    ${HEADERS}
 )
 
 include_directories (
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic/include
+    ${MATH_BASIC_INCLUDE_DIRS}
 )
 
 if (BUILD_STATIC_LIBRARIES)
@@ -66,12 +67,9 @@ else ()
     add_library (math-extra SHARED ${SOURCES})
 endif ()
 
-set (lib-math-basic ${CMAKE_CURRENT_BINARY_DIR}/math-basic/${CMAKE_STATIC_LIBRARY_PREFIX}math-basic${CMAKE_STATIC_LIBRARY_SUFFIX})
-target_link_libraries (math-extra ${lib-math-basic})
-
-add_dependencies (math-extra math-basic-build)
-
-set_target_properties (math-extra PROPERTIES VERSION ${math-extra_VERSION_STRING} SOVERSION ${math-extra_VERSION_MAJOR})
+target_link_libraries (math-extra ${MATH_BASIC_LIBRARIES})
+set_target_properties (math-extra PROPERTIES VERSION ${math-extra_VERSION_STRING}
+                                             SOVERSION ${math-extra_VERSION_MAJOR})
 
 # ----------------------------- Install target --------------------------------
 
