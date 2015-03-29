@@ -26,11 +26,17 @@ set (math-extra_VERSION_MINOR 0)
 set (math-extra_VERSION_PATCH 0)
 set (math-extra_VERSION_STRING ${math-extra_VERSION_MAJOR}.${math-extra_VERSION_MINOR}.${math-extra_VERSION_PATCH})
 
+# BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
+# make it prominent in the GUI.
+option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+
 # ------------------------  Add referenced projects ---------------------------
 
-
 # This is an example of using ExternalProject to build a 3rdparty library. Obviouly,
-# one would use add_subdirectory whenever the 3rdparty library also uses CMake.
+# one would use add_subdirectory whenever the 3rdparty library also uses CMake. 
+# If several libraries must be build usting ExternalProject, it is suggested to
+# create a cmake file which can be inclu=== in the main project. A static library
+# will be built, because that is the default of the subproject.
 
 include (ExternalProject) # requires cmake v2.8.0
 ExternalProject_Add (
@@ -38,7 +44,6 @@ ExternalProject_Add (
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/math-basic"
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/math-basic"
-    CMAKE_ARGS "-DBUILD_STATIC_LIBRARIES=1"
     DOWNLOAD_COMMAND ""
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""
@@ -61,11 +66,7 @@ include_directories (
     ${MATH_BASIC_INCLUDE_DIRS}
 )
 
-if (BUILD_STATIC_LIBRARIES)
-    add_library (math-extra STATIC ${SOURCES})
-else ()
-    add_library (math-extra SHARED ${SOURCES})
-endif ()
+add_library (math-extra ${SOURCES})
 
 target_link_libraries (math-extra ${MATH_BASIC_LIBRARIES})
 set_target_properties (math-extra PROPERTIES VERSION ${math-extra_VERSION_STRING}

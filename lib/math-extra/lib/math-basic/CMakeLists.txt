@@ -26,6 +26,10 @@ set (math-basic_VERSION_MINOR 0)
 set (math-basic_VERSION_PATCH 0)
 set (math-basic_VERSION_STRING ${math-basic_VERSION_MAJOR}.${math-basic_VERSION_MINOR}.${math-basic_VERSION_PATCH})
 
+# BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
+# make it prominent in the GUI.
+option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+
 # ------------------------------ Build library --------------------------------
 
 set (SOURCES
@@ -33,14 +37,9 @@ set (SOURCES
 )
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-if (BUILD_STATIC_LIBRARIES)
-    add_library (math-basic STATIC ${SOURCES})
-else ()
-    add_library (math-basic SHARED ${SOURCES})
-endif ()
-
-set_target_properties (math-basic PROPERTIES VERSION ${math-basic_VERSION_STRING} SOVERSION ${math-basic_VERSION_MAJOR})
+add_library (math-basic ${SOURCES})
+set_target_properties (math-basic PROPERTIES VERSION ${math-basic_VERSION_STRING}
+                                             SOVERSION ${math-basic_VERSION_MAJOR})
 
 # ----------------------------- Install target -------------------------------
 
